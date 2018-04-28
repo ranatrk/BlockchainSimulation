@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class MainNetwork {
+	public static int difficulty = 2;
 	
 	public static void main(String[] args) {
 		

@@ -4,6 +4,7 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
@@ -25,6 +26,7 @@ public class User {
 	private Blockchain blockchain;
 	
 	public User(int id) {
+		//TODO identify the user using their Public Key instead of this id
 		this.userId = id;
 		this.wallet = createWallet();
 		this.transactionLog = new TransactionLog();
@@ -129,15 +131,16 @@ public class User {
 			System.out.println("transaction not in log");
 			this.transactionLog.addTransaction(transaction);
 			
-			//At n transactions announce ledger as new block TODO - set n
-			if(this.transactionLog.getReceivedTransactions().size() >= 5)
-				announceBlock(this.transactionLog);
-			
 			ArrayList<User> peersToAnnounceTo =  getRandomPeers();		
 			for(int i = 0; i < peersToAnnounceTo.size(); i++) {
 				User peer = peersToAnnounceTo.get(i);
 				peer.announceTransaction(transaction);
 			}
+			
+			//At n transactions announce ledger as new block TODO - set n
+			if(this.transactionLog.getReceivedTransactions().size() >= 5)
+				announceBlock(this.transactionLog);
+			
 			
 			System.out.println("User " + this.userId + " announcing transaction to peers: " + peersToAnnounceTo.toString());
 			return true;
@@ -148,12 +151,14 @@ public class User {
 		return false;
 	}
 	
-	
+
 	public void announceBlock(TransactionLog transactionLog) {
 
 		Block blockToAnnounce = new Block(this.blockchain.getNewIndex(), new Timestamp(System.currentTimeMillis())
 				, this.blockchain.getLastHash() ,transactionLog.getReceivedTransactions());
 		
+		blockchain.addBlock(blockToAnnounce);
+		//TODO Add block created to my current blockchain.
 		for(int i = 0; i < this.peers.size(); i++) {
 			User peer = this.peers.get(i);
 			peer.verifyBlock(blockToAnnounce);
