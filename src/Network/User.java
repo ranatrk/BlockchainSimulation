@@ -20,15 +20,16 @@ import BlockchainComponents.Transaction;
 public class User {
 
 	private int userId;
+	private PublicKey publicKeyID;
 	private ArrayList<User> peers;
 	private Wallet wallet;
 	private TransactionLog transactionLog;
 	private Blockchain blockchain;
 	
 	public User(int id) {
-		//TODO identify the user using their Public Key instead of this id
 		this.userId = id;
 		this.wallet = createWallet();
+		this.publicKeyID = wallet.getPublicKey();
 		this.transactionLog = new TransactionLog();
 		this.blockchain = new Blockchain();
 		this.peers = new ArrayList<User>();
@@ -36,7 +37,7 @@ public class User {
 	
 	private Wallet createWallet() {
 		try {
-			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA","SUN");
 			keyGen.initialize(1024);
 			
 			KeyPair keyPair = keyGen.genKeyPair();
@@ -44,7 +45,7 @@ public class User {
 			PrivateKey privateKey = keyPair.getPrivate();
 		    return new Wallet(publicKey, privateKey);
 
-		} catch (NoSuchAlgorithmException e) {
+		} catch (NoSuchAlgorithmException | NoSuchProviderException e) {
 			System.err.println("Exception at createWallet in User: " + e.getLocalizedMessage());
 		}
 		return null;
@@ -100,7 +101,7 @@ public class User {
 	//Sign transaction using private key
 	private void signTransaction(Transaction transaction) {
 		try {
-			Signature sig = Signature.getInstance("SHA1withRSA");
+			Signature sig = Signature.getInstance("SHA1withDSA");
 			byte[] data = transaction.getTransactionId().getBytes();
 //			PublicKey publicKey = wallet.getPublicKey();
 			PrivateKey privateKey = wallet.getPrivateKey();

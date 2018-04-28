@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 
 public class Blockchain {
 	
-	//TODO we might need to change the datastructure to work with fork
+	//TODO we might need to change the data structure to work with fork
 	private LinkedHashMap<String, Block> blockchain= new LinkedHashMap<String, Block>();
 	private Block lastBlock;
 	private static Block genesisBlock;
@@ -34,7 +34,9 @@ public class Blockchain {
 	}
 	
 	public void addBlock(Block block) {
-		//TODO
+		//TODO find position to be added 
+		//TODO add block
+		//TODO set prev hash of the block
 	}
 	
 	public String getLastHash() {

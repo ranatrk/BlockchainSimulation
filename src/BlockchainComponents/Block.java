@@ -52,7 +52,6 @@ public class Block {
 	}
 	
 	private boolean checkWithDifficulty(byte[] hash){
-		//TODO check if this method is working correctly :)
 		System.out.println("Checking hash......");
 		int difficulty = MainNetwork.difficulty;
 //		String hashString = Base64.getEncoder().encode(hash).toString();
