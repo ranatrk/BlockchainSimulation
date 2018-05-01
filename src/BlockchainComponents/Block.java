@@ -4,9 +4,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-
 import Network.MainNetwork;
 
 public class Block {
@@ -21,23 +18,31 @@ public class Block {
 		this.index = index;
 		this.timestamp = timestamp;
 		this.previousHash = previousHash;
-		this.transactionsData = transactionsData;
-		System.out.println("Hashing......");
-		this.myHash = calculateHash();
+		
+		this.transactionsData = new ArrayList<Transaction>();
+		for (int i = 0; i < transactionsData.size(); i++) {
+			this.transactionsData.add(transactionsData.get(i));
+		}
+		
+		if(index == 0) {
+			this.myHash = "00";
+		}else {
+			this.myHash = calculateHash();
+		}
 	}
 	
 	private String calculateHash() {
-		//find hash using hash of previous hash + transactions + nonce value,
+		System.out.println();
+		//Find hash using hash of previous hash + transactions + nonce value,
 		int nonce = 0;
 		boolean hashFound = false;
+		byte[] hash = null;
+		
 		while(!hashFound){
 			try {
-				System.out.println("Finding hash......");
 				MessageDigest digest = MessageDigest.getInstance("SHA-256");
-				String data = previousHash + 
-						transactionsData.toString() + 
-						nonce;
-				byte[] hash = digest.digest(data.getBytes());
+				String data = previousHash + transactionsData.toString() + nonce;
+				hash = digest.digest(data.getBytes());
 					
 				hashFound = checkWithDifficulty(hash);
 				nonce++;
@@ -45,34 +50,40 @@ public class Block {
 			} catch (NoSuchAlgorithmException e) {
 				System.err.println("Exception at calculateHash in Block: " + e.getLocalizedMessage());
 			}
-			
-			
 		}
-		return "";
-	}
-	
-	private boolean checkWithDifficulty(byte[] hash){
-		System.out.println("Checking hash......");
-		int difficulty = MainNetwork.difficulty;
-//		String hashString = Base64.getEncoder().encode(hash).toString();
 		
+		System.out.println("Found Hash for block " + index);
 		StringBuffer sb = new StringBuffer();
+		
 		for (byte b : hash) {
 			sb.append(String.format("%02x", b & 0xff));
 		}
+		
 		String hashString = sb.toString();
-		System.out.println("Hash " + hashString);
+		return hashString;
+	}
+	
+	private boolean checkWithDifficulty(byte[] hash){
+		int difficulty = MainNetwork.difficulty;		
+		StringBuffer sb = new StringBuffer();
+		
+		for (byte b : hash) {
+			sb.append(String.format("%02x", b & 0xff));
+		}
+		
+		String hashString = sb.toString();
+//		System.out.println("Hash " + hashString);
 		
 		String substringToBeChecked = hashString.substring(0, difficulty);
-		System.out.println("Substrings: " + substringToBeChecked + " , " + Collections.nCopies(difficulty, "0"));
-		int comparing =  substringToBeChecked.compareTo(String.join("",Collections.nCopies(difficulty, "0")));
-		System.out.println("Checking hash: " + comparing);
-		if(comparing==0)
+//		System.out.println("Substrings: " + substringToBeChecked + " , " + new String(new char[difficulty]).replace("\0", "0"));
+		
+		int comparing =  substringToBeChecked.compareTo(String.join("",new String(new char[difficulty]).replace("\0", "0")));
+		
+		if(comparing == 0)
 			return true;
 		else
 			return false;
 	}
-
 	
 	public int getIndex() {
 		return index;
@@ -94,4 +105,16 @@ public class Block {
 		return transactionsData;
 	}
 
+	public void printBlock() {
+		System.out.println("Block " + this.index);
+		System.out.println("Previous Hash:  " + this.previousHash);
+		System.out.println("My Hash:  " + this.myHash);
+		System.out.println("Transactions: ");
+		
+		for(int i = 0; i < transactionsData.size(); i++) {
+			System.out.println(transactionsData.get(i).getTransactionId());
+		}
+		System.out.println("------------------------------");
+	}
+	
 }

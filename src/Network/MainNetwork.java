@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class MainNetwork {
+	
+	//Nonce number of zeroes
 	public static int difficulty = 2;
+	public static int numOfTransactions = 6;
 	
 	public static void main(String[] args) {
 		
@@ -77,22 +80,33 @@ public class MainNetwork {
 		        20000,30000 
 		);
 		
+//		int numOfTransactions = 20;
+		
 		//create transaction randomly to network every 1 seconds
 		new java.util.Timer().schedule( 
 				new java.util.TimerTask() {
 					@Override
 					public void run() {
-						createTransactionRandomly(networkUsers);
+//						if(numOfTransactions > 0) {
+							createTransactionRandomly(networkUsers);
+//							numOfTransactions--;
+//						}
+//						else {
+//							System.out.println("Stopped transactions");
+//						}
+						
 					}
 				}, 
-				1000, 10000 
+				1000, 3000 
 		);
+
 	}
 	
 	
 	public static void createTransactionRandomly(ArrayList<User> networkUsers) {
 		Random rand = new Random();
 		int userIndex = rand.nextInt(networkUsers.size());
+//		int userIndex = 1;
 		System.out.println("User " + networkUsers.get(userIndex).getUserId() + " announcing a transaction...");
 		boolean announcement = networkUsers.get(userIndex).announceTransaction(networkUsers.get(userIndex).createTransaction());
 		System.out.println("Announcement from user " + networkUsers.get(userIndex).getUserId() + " : " + announcement);
@@ -120,8 +134,5 @@ public class MainNetwork {
 		}
 		return peers;
 	}
-	
-	
-	
 
 }

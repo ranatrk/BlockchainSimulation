@@ -22,15 +22,24 @@ public class TransactionLog {
 		this.receivedTransactions.add(transaction);
 	}
 	
+	public void removeTransaction(Transaction transaction) {
+		this.receivedTransactions.remove(transaction);
+	}
+	
 	public boolean containsTransaction(Transaction transaction) {
 		
 		boolean foundTransaction = false;
 		for(int i = 0; i < this.receivedTransactions.size(); i++) {
 			Transaction mTransaction = this.receivedTransactions.get(i);
+			
 			if(mTransaction.getTransactionId().equals(transaction.getTransactionId()))
-				foundTransaction = true;
+				foundTransaction = true;	
 		}
 		return foundTransaction;
+	}
+	
+	public void clearTransactionLog() {
+		this.receivedTransactions.clear();
 	}
 
 
